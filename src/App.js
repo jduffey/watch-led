@@ -1,15 +1,19 @@
 import './App.css';
 
-import LedLight from './components/LedLight';
+import LedGrid from './components/LedGrid';
 
 const App = () => {
+    const grid = [
+        [true, false, true, false],
+        [false, true, false, true],
+        [true, false, true, false],
+        [false, true, false, true],
+    ];
+
     return (
         <div className="App">
             <h1>LED Light Display</h1>
-            <div>
-                <LedLight isOn={true} />
-                <LedLight isOn={false} />
-            </div>
+            <LedGrid grid={grid} />
         </div>
     );
 }
