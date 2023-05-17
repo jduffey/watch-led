@@ -33,7 +33,7 @@ const App = () => {
             <LedGrid width={4} height={4} />
             <p>Secret: {secret}</p>
             <p>Unix Time: {time}</p>
-            <p>Unix Time // 30: {Math.floor(time / 30)}</p>
+            <p>Unix Time // {timeInterval}: {Math.floor(time / timeInterval)}</p>
             <p>Hash Input: {totp.hashInput}</p>
             <p>Digest: {totp.digest}</p>
         </div>
