@@ -12,7 +12,7 @@ const App = () => {
         digest: "",
     });
     const secret = "MY_SECRET";
-    const timeInterval = 30;
+    const timeInterval = 5;
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -23,8 +23,7 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        const totpResult = TOTP(secret, time, timeInterval);
-        setTotp(totpResult);
+        setTotp(TOTP(secret, time, timeInterval));
     }, [time]);
 
     return (

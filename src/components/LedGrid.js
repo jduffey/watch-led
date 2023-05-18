@@ -5,9 +5,6 @@ const isLightOn = (x) => parseInt(x, 16) % 2 === 0;
 const LedGrid = ({ width, height, entropy }) => {
     console.log("LedGrid", width, height, entropy);
 
-    const first16 = entropy.slice(0, 16);
-    console.log("first16", first16);
-
     const grid = Array(height)
         .fill()
         .map(() => Array(width).fill(null));
@@ -16,7 +13,9 @@ const LedGrid = ({ width, height, entropy }) => {
         <div className="LedGridContainer">
             <p>Entropy: {entropy}</p>
             {grid.map((row, rowIndex) => (
-                <div key={rowIndex} style={{ display: 'flex' }}>
+                <div
+                    key={rowIndex}
+                    style={{ display: 'flex' }}>
                     {row.map((_, colIndex) => {
                         const ledIndex = rowIndex * width + colIndex;
                         return (
@@ -35,7 +34,7 @@ const LedGrid = ({ width, height, entropy }) => {
                     key={rowIndex} style={{ display: 'flex' }}>
                     {row.map((_, colIndex) => {
                         const ledIndex = rowIndex * width + colIndex;
-                        return first16[ledIndex];
+                        return entropy[ledIndex];
                     })}
                 </div>
             ))}
