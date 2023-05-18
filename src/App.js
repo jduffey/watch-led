@@ -30,7 +30,7 @@ const App = () => {
     return (
         <div className="App">
             <h1>LED Light Display</h1>
-            <LedGrid width={4} height={4} entropy="abcd1234"/>
+            <LedGrid width={4} height={4} entropy={totp.digest} />
             <p>Secret: {secret}</p>
             <p>Unix Time: {time}</p>
             <p>Unix Time // {timeInterval}: {Math.floor(time / timeInterval)}</p>
