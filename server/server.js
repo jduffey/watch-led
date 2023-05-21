@@ -5,16 +5,11 @@ const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
 
-// app.get('/', (req, res) => {
-//     res.send('Hello World!');
-// });
-
 app.use(cors());
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
-
 
 app.post('/save-image', express.json(), (req, res) => {
     console.log('Endpoint /save-image called');

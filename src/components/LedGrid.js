@@ -1,20 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import { forwardRef } from 'react';
 
 import LedLight from './LedLight';
 
 const isLightOn = (x) => parseInt(x, 16) % 2 === 0;
 
-const LedGrid = React.forwardRef(({ width, height, entropy }, ref) => {
-    // const gridRef = useRef(null);
-
-    // useEffect(() => {
-    //     console.log('Setting ref', gridRef.current);
-    //     if (ref) {
-    //         ref.current = gridRef.current;
-    //     }
-    // }, [ref]);
-
-
+const LedGrid = forwardRef(({ width, height, entropy }, ref) => {
     const grid = Array(height)
         .fill()
         .map(() => Array(width).fill(null));
