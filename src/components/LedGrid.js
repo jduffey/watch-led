@@ -22,7 +22,7 @@ const CharGrid = ({ width, height, entropy }) => {
 }
 
 const LedGrid = ({ width, height, entropy }) => {
-    console.log("LedGrid", width, height, entropy);
+    // console.log("LedGrid", width, height, entropy);
 
     const grid = Array(height)
         .fill()
