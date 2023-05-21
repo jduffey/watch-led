@@ -1,35 +1,26 @@
+import React, { useEffect, useRef } from 'react';
+
 import LedLight from './LedLight';
 
 const isLightOn = (x) => parseInt(x, 16) % 2 === 0;
 
-const CharGrid = ({ width, height, entropy }) => {
-    const grid = Array(height)
-        .fill()
-        .map(() => Array(width).fill(null));
+const LedGrid = React.forwardRef(({ width, height, entropy }, ref) => {
+    // const gridRef = useRef(null);
 
-    return grid.map((row, rowIndex) => (
-        <div key={rowIndex} style={{ display: 'flex' }}>
-            {row.map((_, colIndex) => {
-                const ledIndex = rowIndex * width + colIndex;
-                return (
-                    <div className="LedGridContainerCharacter">
-                        {entropy[ledIndex]}
-                    </div>
-                );
-            })}
-        </div>
-    ));
-}
+    // useEffect(() => {
+    //     console.log('Setting ref', gridRef.current);
+    //     if (ref) {
+    //         ref.current = gridRef.current;
+    //     }
+    // }, [ref]);
 
-const LedGrid = ({ width, height, entropy }) => {
-    // console.log("LedGrid", width, height, entropy);
 
     const grid = Array(height)
         .fill()
         .map(() => Array(width).fill(null));
 
     return (
-        <div className="LedGridContainer">
+        <div className="LedGridContainer" ref={ref}>
             {grid.map((row, rowIndex) => (
                 <div
                     key={rowIndex}
@@ -45,9 +36,8 @@ const LedGrid = ({ width, height, entropy }) => {
                     })}
                 </div>
             ))}
-            <CharGrid width={width} height={height} entropy={entropy} />
         </div>
     );
-};
+});
 
 export default LedGrid;

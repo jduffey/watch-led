@@ -7,8 +7,6 @@ import TOTP from './utils/TOTP';
 
 import html2canvas from 'html2canvas';
 
-import fs from 'fs';
-
 const App = () => {
     const [time, setTime] = useState(Math.floor(Date.now() / 1000));
     const [totp, setTotp] = useState({
@@ -28,12 +26,24 @@ const App = () => {
     const dataSize = gridSize.width * gridSize.height;
 
     const generateImage = async () => {
-        const canvas = await html2canvas(gridRef.current);
+        console.log('generateImage called', gridRef.current);
+        const canvas = await html2canvas(gridRef.current, { useCORS: true });
         const image = canvas.toDataURL().replace(/^data:image\/\w+;base64,/, "");
-        const unixTimestamp = Math.floor(Date.now() / 1000).toString();
-        fs.writeFileSync(`/images/${unixTimestamp}.png`, image, { encoding: 'base64' }, function (err) {
-            console.log('File saved: ' + unixTimestamp + '.png');
-        });
+        // const unixTimestamp = Math.floor(Date.now() / 1000).toString();
+
+        // Send the image data to the server
+        fetch('http://localhost:3001/save-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image })
+        })
+            .then(response => response.text())
+            .then(data => console.log(data))
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
     const mlTrainingClassificationData = (digest) => (
@@ -44,24 +54,29 @@ const App = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setTime(Math.floor(Date.now() / 1000));
-        }, 1000);
+        }, 5000);
 
         return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
         setTotp(TOTP(secret, time, timeInterval));
-        generateImage();
     }, [time]);
+
+    useEffect(() => {
+        if (gridRef.current) {
+            generateImage();
+        }
+    }, [gridRef]);
 
     return (
         <div className="App">
             <h1>LED Light Display</h1>
             <LedGrid ref={gridRef} width={gridSize.width} height={gridSize.height} entropy={totp.digest} />
             <div style={{ display: 'flex' }}>
-                {mlTrainingClassificationData(totp.digest).map((e) => {
+                {mlTrainingClassificationData(totp.digest).map((e, i) => {
                     return (
-                        <div className="LedGridContainerCharacter">
+                        <div key={i} className="LedGridContainerCharacter">
                             {e}
                         </div>
                     );
