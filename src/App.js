@@ -64,10 +64,10 @@ const App = () => {
     }, [time]);
 
     useEffect(() => {
-        if (gridRef.current) {
+        if (gridRef.current && totp.digest) {
             generateImage();
         }
-    }, [gridRef]);
+    }, [gridRef, totp.digest]);
 
     return (
         <div className="App">
