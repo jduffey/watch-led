@@ -50,8 +50,9 @@
     text-align: center;
 }
 
-.LedGridContainerText {
+.LedGridContainerCharacter {
     font-size: 18px;
     font-family: monospace;
     font-weight: bold;
+    margin: 0 6px 0 6px;
 }

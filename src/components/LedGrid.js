@@ -11,7 +11,6 @@ const LedGrid = ({ width, height, entropy }) => {
 
     return (
         <div className="LedGridContainer">
-            <p>Entropy: {entropy}</p>
             {grid.map((row, rowIndex) => (
                 <div
                     key={rowIndex}
@@ -27,14 +26,15 @@ const LedGrid = ({ width, height, entropy }) => {
                     })}
                 </div>
             ))}
-            <br />
             {grid.map((row, rowIndex) => (
-                <div
-                    className="LedGridContainerText"
-                    key={rowIndex} style={{ display: 'flex' }}>
+                <div key={rowIndex} style={{ display: 'flex' }}>
                     {row.map((_, colIndex) => {
                         const ledIndex = rowIndex * width + colIndex;
-                        return entropy[ledIndex];
+                        return (
+                            <div className="LedGridContainerCharacter">
+                                {entropy[ledIndex]}
+                            </div>
+                        );
                     })}
                 </div>
             ))}
