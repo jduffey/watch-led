@@ -7,8 +7,10 @@ import TOTP from './utils/TOTP';
 
 import html2canvas from 'html2canvas';
 
+const currentUnixSecond = () => Math.floor(Date.now() / 1000);
+
 const App = () => {
-    const [time, setTime] = useState(Math.floor(Date.now() / 1000));
+    const [time, setTime] = useState(currentUnixSecond());
     const [totp, setTotp] = useState({
         hashInput: "",
         digest: "",
@@ -17,7 +19,7 @@ const App = () => {
     const gridRef = useRef();
 
     const secret = "MY_SECRET";
-    const timeInterval = 5;
+    const timeIntervalSeconds = 5;
     const gridSize = {
         width: 4,
         height: 4,
@@ -28,7 +30,7 @@ const App = () => {
     const generateImage = async () => {
         const canvas = await html2canvas(gridRef.current, { useCORS: true });
         const image = canvas.toDataURL().replace(/^data:image\/\w+;base64,/, "");
-        const unixTimestamp = Math.floor(Date.now() / 1000);
+        const unixTimestamp = currentUnixSecond();
 
         // Send the image data to the server
         fetch('http://localhost:3001/save-image', {
@@ -52,14 +54,14 @@ const App = () => {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setTime(Math.floor(Date.now() / 1000));
-        }, 5000);
+            setTime(currentUnixSecond());
+        }, timeIntervalSeconds * 1000);
 
         return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
-        setTotp(TOTP(secret, time, timeInterval));
+        setTotp(TOTP(secret, time, timeIntervalSeconds));
     }, [time]);
 
     useEffect(() => {
@@ -83,7 +85,7 @@ const App = () => {
             </div>
             <p>Secret: {secret}</p>
             <p>Unix Time: {time}</p>
-            <p>Unix Time // {timeInterval}: {Math.floor(time / timeInterval)}</p>
+            <p>Unix Time // {timeIntervalSeconds}: {Math.floor(time / timeIntervalSeconds)}</p>
             <p>Hash Input: {totp.hashInput}</p>
             <p>Digest: {totp.digest}</p>
         </div>
