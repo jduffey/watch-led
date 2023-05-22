@@ -26,7 +26,6 @@ const App = () => {
     const dataSize = gridSize.width * gridSize.height;
 
     const generateImage = async () => {
-        console.log('generateImage called', gridRef.current);
         const canvas = await html2canvas(gridRef.current, { useCORS: true });
         const image = canvas.toDataURL().replace(/^data:image\/\w+;base64,/, "");
         const unixTimestamp = Math.floor(Date.now() / 1000);
