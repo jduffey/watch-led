@@ -1,13 +1,17 @@
+const ledColor = {
+    on: 'orange',
+    off: '#EEE',
+};
+
 const LedLight = ({ isOn }) => {
     const lightStyle = {
-        width: '20px',
-        height: '20px',
-        backgroundColor: isOn ? 'green' : 'red',
-        margin: '1px',
+        backgroundColor: isOn
+            ? ledColor.on
+            : ledColor.off,
     };
 
     return (
-        <div style={lightStyle}></div>
+        <div className="LedLightComponent" style={lightStyle}></div>
     );
 };
 

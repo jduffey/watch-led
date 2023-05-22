@@ -19,8 +19,8 @@ const App = () => {
     const secret = "MY_SECRET";
     const timeInterval = 5;
     const gridSize = {
-        width: 16,
-        height: 1,
+        width: 4,
+        height: 4,
     }
 
     const dataSize = gridSize.width * gridSize.height;
@@ -29,7 +29,7 @@ const App = () => {
         console.log('generateImage called', gridRef.current);
         const canvas = await html2canvas(gridRef.current, { useCORS: true });
         const image = canvas.toDataURL().replace(/^data:image\/\w+;base64,/, "");
-        // const unixTimestamp = Math.floor(Date.now() / 1000).toString();
+        const unixTimestamp = Math.floor(Date.now() / 1000);
 
         // Send the image data to the server
         fetch('http://localhost:3001/save-image', {
@@ -37,7 +37,7 @@ const App = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ image })
+            body: JSON.stringify({ image, unixTimestamp })
         })
             .then(response => response.text())
             .then(data => console.log(data))

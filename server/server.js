@@ -14,7 +14,7 @@ app.listen(port, () => {
 app.post('/save-image', express.json(), (req, res) => {
     console.log('Endpoint /save-image called');
     const image = req.body.image;
-    const fileName = Date.now() + '.png';
+    const fileName = req.body.unixTimestamp + '.png';
     const filePath = path.join(__dirname, 'images', fileName);
 
     fs.writeFile(filePath, image, 'base64', (err) => {
@@ -23,6 +23,7 @@ app.post('/save-image', express.json(), (req, res) => {
             res.status(500).send('Error saving image');
         } else {
             res.send('Image saved successfully');
+            console.log('Image saved successfully: ' + fileName);
         }
     });
 });
