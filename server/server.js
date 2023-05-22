@@ -17,6 +17,12 @@ app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
 
+const createDirectory = (dirPath) => {
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+}
+
 const countFiles = (dirPath) => {
     return new Promise((resolve, reject) => {
         fs.readdir(dirPath, (err, files) => {
@@ -47,9 +53,7 @@ app.post('/save-image', express.json(), async (req, res) => {
     const filePath = path.join(IMAGES_DIRECTORY_PATH, fileName);
 
     try {
-        if (!fs.existsSync(IMAGES_DIRECTORY_PATH)) {
-            fs.mkdirSync(IMAGES_DIRECTORY_PATH, { recursive: true });
-        }
+        createDirectory(IMAGES_DIRECTORY_PATH);
 
         const imageCount = await countFiles(IMAGES_DIRECTORY_PATH);
         console.log(`Image count: ${imageCount}`);
