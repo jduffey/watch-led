@@ -6,46 +6,65 @@ const cors = require('cors');
 const app = express();
 const port = 3001;
 
+const IMAGES_DIRECTORY_NAME = 'images';
+const IMAGE_COUNT_LIMIT = 100;
+const ERROR_STATUS_CODE = 500;
+const IMAGES_DIRECTORY_PATH = path.join(__dirname, IMAGES_DIRECTORY_NAME);
+
 app.use(cors());
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });
 
-/*
-Limit the number of images saved to prevent accidentally bloating
-the file system if we forget to terminate the server
-*/
-const imageCountLimit = 100;
+if (!fs.existsSync(IMAGES_DIRECTORY_PATH)) {
+    fs.mkdirSync(IMAGES_DIRECTORY_PATH, { recursive: true });
+}
 
-app.post('/save-image', express.json(), (req, res) => {
-    console.log('Endpoint /save-image called');
+const countFiles = (dirPath) => {
+    return new Promise((resolve, reject) => {
+        fs.readdir(dirPath, (err, files) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(files.length);
+            }
+        });
+    });
+}
+
+const saveImage = (filePath, image) => {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(filePath, image, 'base64', (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve('Image saved successfully: ' + path.basename(filePath));
+            }
+        });
+    });
+}
+
+app.post('/save-image', express.json(), async (req, res) => {
     const image = req.body.image;
     const fileName = req.body.unixTimestamp + '.png';
-    const imagesDirectoryName = 'images';
-    const filePath = path.join(__dirname, imagesDirectoryName, fileName);
+    const filePath = path.join(IMAGES_DIRECTORY_PATH, fileName);
 
-    fs.readdir(path.join(__dirname, 'images'), (err, files) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send('Error saving image');
-        } else {
-            const filesInImagesDirectory = files.length;
-            console.log(`Number of files in ${imagesDirectoryName} directory: ` + filesInImagesDirectory);
-            if (filesInImagesDirectory < imageCountLimit) {
-                fs.writeFile(filePath, image, 'base64', (err) => {
-                    if (err) {
-                        console.error(err);
-                        res.status(500).send('Error saving image');
-                    } else {
-                        res.send('Image saved successfully: ' + fileName);
-                        console.log('Image saved successfully: ' + fileName);
-                    }
-                });
-            } else {
-                res.status(500).send('Image limit reached - image not saved');
-                console.log(`Image limit (${imageCountLimit}) reached - image not saved`);
-            }
+    try {
+        const imageCount = await countFiles(IMAGES_DIRECTORY_PATH);
+        console.log(`Image count: ${imageCount}`);
+
+        if (imageCount >= IMAGE_COUNT_LIMIT) {
+            res.status(ERROR_STATUS_CODE).send('Image limit reached - image not saved');
+            console.error(`Image limit (${IMAGE_COUNT_LIMIT}) reached - image not saved`);
+            return;
         }
-    });
+
+        const message = await saveImage(filePath, image);
+        res.send(message);
+        console.log(message);
+    } catch (error) {
+        res.status(ERROR_STATUS_CODE).send('Error: ' + error.message);
+        console.error('Error:', error);
+    }
 });
