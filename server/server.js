@@ -41,13 +41,16 @@ const saveImage = (filePath, image) => {
             if (err) {
                 reject(err);
             } else {
-                resolve('Image saved successfully: ' + path.basename(filePath));
+                resolve('   ✅ Image saved successfully: ' + path.basename(filePath));
             }
         });
     });
 }
 
-app.post('/save-image', express.json(), async (req, res) => {
+const saveImageEndpoint = '/save-image';
+
+app.post(saveImageEndpoint, express.json(), async (req, res) => {
+    console.log(`➡️  POST ${saveImageEndpoint} called`);
     const image = req.body.image;
     const fileName = req.body.unixTimestamp + '.png';
     const filePath = path.join(IMAGES_DIRECTORY_PATH, fileName);
@@ -56,11 +59,11 @@ app.post('/save-image', express.json(), async (req, res) => {
         createDirectory(IMAGES_DIRECTORY_PATH);
 
         const imageCount = await countFiles(IMAGES_DIRECTORY_PATH);
-        console.log(`Image count: ${imageCount}`);
+        console.log(`   🔢 Image count: ${imageCount}`);
 
         if (imageCount >= IMAGE_COUNT_LIMIT) {
             res.status(ERROR_STATUS_CODE).send('Image limit reached - image not saved');
-            console.error(`Image limit (${IMAGE_COUNT_LIMIT}) reached - image not saved`);
+            console.error(`   ❌ Image limit (${IMAGE_COUNT_LIMIT}) reached - image not saved`);
             return;
         }
 
@@ -69,6 +72,6 @@ app.post('/save-image', express.json(), async (req, res) => {
         console.log(message);
     } catch (error) {
         res.status(ERROR_STATUS_CODE).send('Error: ' + error.message);
-        console.error('Error:', error);
+        console.error('   ❌ Error:', error);
     }
 });
