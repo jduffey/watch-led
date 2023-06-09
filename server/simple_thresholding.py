@@ -1,26 +1,48 @@
+from flask import Flask, render_template
 import cv2
+import base64
+import os
+from io import BytesIO
+
+app = Flask(__name__)
 
 
-image = cv2.imread('images/1686316695.png')
-cv2.imshow("Image", image)
+@app.route('/')
+def home():
+    image_path = 'images/1686316695.png'
+    image = cv2.imread(image_path)
 
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-blurred = cv2.GaussianBlur(gray, (7, 7), 0)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (7, 7), 0)
 
-# apply basic thresholding -- the first parameter is the image
-# we want to threshold, the second value is is our threshold
-# check; if a pixel value is greater than our threshold (in this
-# case, 200), we set it to be *black, otherwise it is *white*
-(T, threshInv) = cv2.threshold(blurred, 159, 255,
-                               cv2.THRESH_BINARY_INV)
+    images = []
 
-cv2.imshow("Threshold Binary Inverse", threshInv)
+    # Loop over thresholds
+    for threshold in range(0, 256, 32):
+        _, threshInv = cv2.threshold(
+            blurred, threshold, 255, cv2.THRESH_BINARY_INV)
+        output = cv2.bitwise_and(image, image, mask=threshInv)
 
-# using normal thresholding (rather than inverse thresholding)
-(T, thresh) = cv2.threshold(blurred, 200, 255, cv2.THRESH_BINARY)
-cv2.imshow("Threshold Binary", thresh)
+        # Encode image as base64
+        _, buffer = cv2.imencode('.jpg', output)
+        base64_image = base64.b64encode(buffer).decode('utf-8')
 
-# visualize only the masked regions in the image
-masked = cv2.bitwise_and(image, image, mask=threshInv)
-cv2.imshow("Output", masked)
-cv2.waitKey(0)
+        # Append to the list of images
+        images.append((threshold, base64_image))
+
+    # Generate simple website as a multi-line string
+    html = "<html><body>"
+    html += '<div style="display: flex; flex-wrap: wrap;">'
+    for threshold, image in images:
+        html += f'<div style="margin: 10px;">'
+        html += f'<p>Threshold: {threshold}</p>'
+        html += f'<img src="data:image/jpeg;base64, {image}" alt="Image" />'
+        html += '</div>'
+    html += '</div>'
+    html += "</body></html>"
+
+    return html
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
